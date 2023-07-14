@@ -5,7 +5,7 @@
 #  id           :bigint           not null, primary key
 #  amount       :float
 #  card_brand   :string
-#  card_number  :integer
+#  card_number  :string
 #  payment_type :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null

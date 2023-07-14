@@ -21,18 +21,24 @@ class DonationsController < ApplicationController
   def create
     if @card_valid
       donor_ip = request.ip
-      byebug
-      @donor = Donor.new(name: params[:donation][:donor_name], lastname: params[:donation][:donor_lastname],
-                         email: params[:donation][:donor_email], ip: donor_ip, browser: )
+      donor_browser = {
+        "browser": browser.name,
+        "platform": browser.platform,
+        "device": browser.device
+      }
+
+      @donor = Donor.new(name: params[:donor][:donor_name], lastname: params[:donor][:donor_lastname],
+                         email: params[:donor][:donor_email], ip: donor_ip, browser: donor_browser)
 
       if @donor.save
         @donation = Donation.new(donation_params)
-        @donation.card_number = params[:card_number]
+        @donation.card_number = donation_params[:card_number]
         @donation.card_brand = @card_brand
-        @donation.donor_id = donor.id
+        @donation.donor_id = @donor.id
 
         if @donation.save
-          render json: @donation, status: :created, location: @donation
+
+          render json: { message: 'Donation created' }, status: :created, location: @donation
         else
           render json: @donation.errors, status: :unprocessable_entity
         end
@@ -60,6 +66,10 @@ class DonationsController < ApplicationController
     @donation.destroy
   end
 
+  def list_donations
+
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -68,12 +78,11 @@ class DonationsController < ApplicationController
   end
 
   def check_credit_card
-    validate_credit_card(params[:donation][:card_number], params[:donation][:expire_date])
+    validate_credit_card(donation_params[:card_number], params[:card][:expire_date])
   end
 
   # Only allow a list of trusted parameters through.
   def donation_params
-    params.require(:donation).permit(:payment_type, :amount, :company_id, :donor_id, :card_brand, :card_number,
-                                     :donor_email, :donor_lastname, :donor_email)
+    params.require(:donation).permit(:payment_type, :amount, :company_id, :donor_id, :card_brand, :card_number)
   end
 end
