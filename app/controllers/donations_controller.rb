@@ -37,7 +37,7 @@ class DonationsController < ApplicationController
         @donation.donor_id = @donor.id
 
         if @donation.save
-
+          DonationMailer.with(user: @donor).thanks_email.deliver_later
           render json: { message: 'Donation created' }, status: :created, location: @donation
         else
           render json: @donation.errors, status: :unprocessable_entity
