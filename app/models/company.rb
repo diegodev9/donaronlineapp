@@ -8,6 +8,8 @@
 #  updated_at :datetime         not null
 #
 class Company < ApplicationRecord
-  has_many :donations
+  has_many :donations, dependent: :destroy
   has_many :donors, through: :donations
+
+  validates :name, presence: true
 end

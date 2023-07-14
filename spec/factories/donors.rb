@@ -13,10 +13,12 @@
 #
 FactoryBot.define do
   factory :donor do
-    email { "MyString" }
-    lastname { "MyString" }
-    name { "MyString" }
-    ip { "MyString" }
-    browser { "" }
+    email { Faker::Internet.email }
+    lastname { Faker::Name.last_name }
+    name { Faker::Name.first_name }
+    ip { Faker::Internet.ip_v4_address }
+    browser do
+      {"browser": "Some User Agent", "platform": "Android Jelly Bean 4.2", "device": "Samsung"}
+    end
   end
 end

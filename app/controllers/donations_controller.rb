@@ -1,9 +1,10 @@
 class DonationsController < ApplicationController
-  before_action :authenticate_api_v1_user!, only: %i[index show update destroy]
+  before_action :authenticate_api_v1_user!, only: %i[index show update destroy list_donations]
   before_action :set_donation, only: [:show, :update, :destroy]
 
   include CardValidator
-  before_action :check_credit_card, only: %i[create update]
+  include CreateDonor
+  before_action :check_credit_card, only: %i[create]
 
   # GET /donations
   def index
@@ -20,16 +21,7 @@ class DonationsController < ApplicationController
   # POST /donations
   def create
     if @card_valid
-      donor_ip = request.ip
-      donor_browser = {
-        "browser": browser.name,
-        "platform": browser.platform,
-        "device": browser.device
-      }
-
-      @donor = Donor.new(name: params[:donor][:donor_name], lastname: params[:donor][:donor_lastname],
-                         email: params[:donor][:donor_email], ip: donor_ip, browser: donor_browser)
-
+      create_donor
       if @donor.save
         @donation = Donation.new(donation_params)
         @donation.card_number = donation_params[:card_number]
@@ -40,8 +32,12 @@ class DonationsController < ApplicationController
           DonationMailer.with(user: @donor).thanks_email.deliver_later
           render json: { message: 'Donation created' }, status: :created, location: @donation
         else
+          puts @donations.errors.full_messages
           render json: @donation.errors, status: :unprocessable_entity
         end
+      else
+        puts @donor.errors.full_messages
+        render json: @donor.errors, status: :unprocessable_entity
       end
     else
       render json: { message: 'card is not valid' }, status: :unprocessable_entity
@@ -50,14 +46,10 @@ class DonationsController < ApplicationController
 
   # PATCH/PUT /donations/1
   def update
-    if @card_valid
-      if @donation.update(donation_params)
-        render json: @donation
-      else
-        render json: @donation.errors, status: :unprocessable_entity
-      end
+    if @donation.update(donation_params)
+      render json: @donation
     else
-      render json: { message: 'card is not valid' }, status: :unprocessable_entity
+      render json: @donation.errors, status: :unprocessable_entity
     end
   end
 
@@ -67,7 +59,15 @@ class DonationsController < ApplicationController
   end
 
   def list_donations
+    if params[:from].present? && params[:to].present?
+      params_from = params[:from].to_datetime.beginning_of_day.utc
+      params_to = params[:to].to_datetime.end_of_day.utc
+      @donations = Donation.where(created_at: [params_from..params_to])
+    else
+      @donations = Donation.all
+    end
 
+    render json: { "donations count": @donations.count , donations: @donations } , status: :ok
   end
 
   private
@@ -78,7 +78,11 @@ class DonationsController < ApplicationController
   end
 
   def check_credit_card
-    validate_credit_card(donation_params[:card_number], params[:card][:expire_date])
+    if params[:card][:expire_date].present?
+      validate_credit_card(donation_params[:card_number], params[:card][:expire_date])
+    else
+      render json: { 'message': "expire date can't be empty" }
+    end
   end
 
   # Only allow a list of trusted parameters through.

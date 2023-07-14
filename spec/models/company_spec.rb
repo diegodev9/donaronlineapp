@@ -10,5 +10,7 @@
 require 'rails_helper'
 
 RSpec.describe Company, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it { is_expected.to have_many(:donations).dependent(:destroy) }
+  it { is_expected.to have_many(:donors).through(:donations) }
+  it { is_expected.to validate_presence_of(:name) }
 end

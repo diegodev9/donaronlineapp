@@ -25,4 +25,9 @@
 class Donation < ApplicationRecord
   belongs_to :company
   belongs_to :donor
+
+  validates :amount, presence: true, numericality: true
+  validates :payment_type, presence: true, 
+                           inclusion: { in: ['credit card', 'credit_card', 'card'],
+                                        message: "%{value} is not a valid payment type" }
 end

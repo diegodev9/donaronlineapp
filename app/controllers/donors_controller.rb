@@ -1,4 +1,5 @@
 class DonorsController < ApplicationController
+  before_action :authenticate_api_v1_user!
   before_action :set_donor, only: [:show, :update, :destroy]
 
   # GET /donors

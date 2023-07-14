@@ -12,5 +12,8 @@ Rails.application.routes.draw do
 
   resources :donations
   resources :companies
+  resources :donors
+
+  get '/list_donations', to: 'donations#list_donations'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

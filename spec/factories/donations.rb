@@ -24,9 +24,14 @@
 #
 FactoryBot.define do
   factory :donation do
-    payment_type { "MyString" }
-    amount { 1.5 }
-    company { nil }
-    donor { nil }
+    card_number_ = CreditCardValidations::Factory.random
+    card_brand_ = CreditCardValidations::Detector.new(card_number_).brand
+
+    payment_type { 'credit card' }
+    amount { Faker::Commerce.price }
+    company
+    donor
+    card_brand { card_brand_ }
+    card_number { card_number_ }
   end
 end
