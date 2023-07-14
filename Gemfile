@@ -31,7 +31,9 @@ gem 'rack-cors'
 gem 'devise', '~> 4.9', '>= 4.9.2'
 gem 'devise-jwt', '~> 0.11.0'
 gem 'jsonapi-serializer', '~> 2.2'
-gem 'pagy', '~> 6.0', '>= 6.0.2' # paginacion
+gem 'pagy', '~> 6.0', '>= 6.0.2'
+gem 'credit_card_validations', '~> 6.0'
+gem 'browser', '~> 5.3', '>= 5.3.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

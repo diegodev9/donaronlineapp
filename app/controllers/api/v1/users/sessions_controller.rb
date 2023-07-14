@@ -54,7 +54,11 @@ module Api
         end
 
         def set_user
-          @user = User.find_by(email: params[:user][:email])
+          if params[:user].present?
+            @user = User.find_by(email: params[:user][:email])
+          else
+            render json: { message: 'You are not authorized' }
+          end
         end
 
         # protected
