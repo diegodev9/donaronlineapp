@@ -1,24 +1,20 @@
-# README
+# DonarOnlineApp
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Instalación
+Requerimientos:
+- nvm (node version 16.20.1)
+- ruby 3.1.2
+- rails 6.1.7.4
+- postgres 15
 
-Things you may want to cover:
+```sh
+cd donaronlineapp
+bundle install
+rails db:create
+rails db:migrate
+rails db:seed
+```
 
-* Ruby version
+## Pruebas con Postman
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Las pruebas con postman y el esquema de la db están dentro de /public/postman_tests
